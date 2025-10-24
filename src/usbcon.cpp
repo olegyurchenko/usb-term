@@ -302,6 +302,8 @@ int UsbConnection :: read(void *buffer, size_t size, uint32_t ms)
     return -1;
   }
 
+  m_message.clear();
+  m_error = 0;
   int actual_length = 0;
   int r = libusb_bulk_transfer(con->dev_handle, con->read_ep, static_cast<unsigned char *>(buffer), size, &actual_length, ms);
   if (r < 0) {
@@ -314,7 +316,8 @@ int UsbConnection :: read(void *buffer, size_t size, uint32_t ms)
         con->must_reopen = 1;
       }
 
-      r = -1;
+      m_error = r;
+      m_message = libusb_error_name(r);
     }
   } else {
     r = actual_length;
@@ -328,6 +331,8 @@ int UsbConnection :: write(const void *buffer, size_t size)
     return -1;
   }
 
+  m_message.clear();
+  m_error = 0;
   int r = libusb_bulk_transfer(con->dev_handle, con->write_ep, static_cast<unsigned char*>(const_cast<void*>(buffer)), size, nullptr, 1000); // 5000ms timeout for reading
   if (r < 0) {
     if (r == LIBUSB_ERROR_NO_DEVICE) {
@@ -337,7 +342,8 @@ int UsbConnection :: write(const void *buffer, size_t size)
       trace(__FILE__, __LINE__, "Failed to write data: %s, size:%lu\n", libusb_error_name(r), size);
       con->must_reopen = true; //!!!!!!!!!!
     }
-    r = -1;
+    m_error = r;
+    m_message = libusb_error_name(r);
   } else {
     r = size;
     //trace_hex(__FILE__, __LINE__, ">>", buffer, size);
