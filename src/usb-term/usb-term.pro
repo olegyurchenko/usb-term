@@ -10,14 +10,20 @@ CONFIG += c++11
 
 SOURCES += \
     ../usbcon.cpp \
+    connectiondialog.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    outputform.cpp
 
 HEADERS += \
-    mainwindow.h
+    connectiondialog.h \
+    mainwindow.h \
+    outputform.h
 
 FORMS += \
-    mainwindow.ui
+    connectiondialog.ui \
+    mainwindow.ui \
+    outputform.ui
 
 
 INCLUDEPATH += \
@@ -41,3 +47,6 @@ win32 {
     LIBS += -ldl -lpthread
     #LIBS += -liso7816 -L../../lib/linux.$$QT_ARCH
 }
+
+RESOURCES += \
+  ../resources/resource.qrc

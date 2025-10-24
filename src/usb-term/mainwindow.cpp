@@ -1,11 +1,19 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "outputform.h"
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QCloseEvent>
+#include <QFileInfo>
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
   , ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+  onFileNew();
+  ui->tabWidget->setTabsClosable(true);
+  connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::onTabCloseRequest);
 }
 
 MainWindow::~MainWindow()
@@ -13,3 +21,181 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
+OutputForm *MainWindow::activeForm()
+{
+  auto w = ui->tabWidget->currentWidget();
+  OutputForm *form = qobject_cast<OutputForm *>(w);
+  return form;
+}
+
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+  int count = ui->tabWidget->count();
+  for(int i = 0; i < count; i++) {
+    ui->tabWidget->setCurrentIndex(i);
+    auto form = activeForm();
+    if(form && !modifiedQuestion(form)) {
+      e->ignore();
+      return;
+    }
+  }
+}
+
+bool MainWindow::modifiedQuestion(OutputForm *form)
+{
+  bool modified = form->isModified();
+  if(modified) {
+    QString prompt =  tr("Data was modified. Save changes to file ?");
+    QMessageBox::StandardButtons buttons = QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard;
+    switch(QMessageBox::question(this,
+                                 tr("Data modified"),
+                                 prompt,
+                                 buttons,
+                                 QMessageBox::Cancel))
+    {
+      case QMessageBox::Save:
+      case QMessageBox::Yes:
+        onFileSave();
+        return !form->isModified();
+      case QMessageBox::Discard:
+        return true;
+      case QMessageBox::Cancel:
+      default:
+        return false;
+    }
+    return false;
+  }
+  return true;
+}
+
+void MainWindow::onFileNew()
+{
+  auto form = new OutputForm(this);
+  connect(form, &OutputForm::fileChanged, this, &MainWindow::onFileChanged, Qt::QueuedConnection);
+  ui->tabWidget->addTab(form, tr("unknown"));
+}
+
+void MainWindow::onFileOpen()
+{
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  if(!modifiedQuestion(form)) {
+    return;
+  }
+
+  auto fileName = form->fileName();
+  if(fileName.isEmpty()) {
+    fileName = QFileDialog::getOpenFileName(this,
+                                            tr("Open file"), "",
+                                            tr("Text files (*.txt);;All files(*.*)"));
+  }
+  if(fileName.isEmpty()) {
+    return;
+  }
+  form->loadFile(fileName);
+  onTabChanged();
+}
+
+void MainWindow::onFileSave()
+{
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  auto fileName = form->fileName();
+  if(fileName.isEmpty()) {
+    fileName = QFileDialog::getSaveFileName(this,
+                                            tr("Save file"), "",
+                                            tr("Text files (*.txt);;All files(*.*)"));
+  }
+
+  if(fileName.isEmpty()) {
+    return;
+  }
+
+  form->saveFile(fileName);
+  onTabChanged();
+}
+
+
+void MainWindow::onFileSaveAs()
+{
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  auto fileName = QFileDialog::getSaveFileName(this,
+                                          tr("Save file"), "",
+                                          tr("Text files (*.txt);;All files(*.*)"));
+  if(fileName.isEmpty()) {
+    return;
+  }
+
+  form->saveFile(fileName);
+  onTabChanged();
+}
+
+void MainWindow::onFileClose()
+{
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  if(!modifiedQuestion(form)) {
+    return;
+  }
+  int index = ui->tabWidget->currentIndex();
+  ui->tabWidget->removeTab(index);
+}
+
+void MainWindow::onExit()
+{
+  close();
+}
+
+void MainWindow::onConnectionOpen()
+{
+}
+
+void MainWindow::onConnectionSend()
+{
+}
+
+void MainWindow::onConnectionClose()
+{
+}
+
+void MainWindow::onTabChanged()
+{
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  int index = ui->tabWidget->currentIndex();
+  auto fileName = form->fileName();
+  if(fileName.isEmpty()) {
+    fileName = tr("unknown");
+  } else {
+    QFileInfo fileInfo(fileName);
+    fileName = fileInfo.fileName();
+  }
+  bool modified = form->isModified();
+  ui->tabWidget->setTabText(index, fileName + QString(modified ? " *" : ""));
+  ui->actionSave->setEnabled(modified);
+}
+
+void MainWindow::onFileChanged()
+{
+  onTabChanged(); //TODO !!!
+}
+
+void MainWindow::onTabCloseRequest(int index)
+{
+  auto w = ui->tabWidget->widget(index);
+  OutputForm *form = qobject_cast<OutputForm *>(w);
+  if(form && modifiedQuestion(form)) {
+    ui->tabWidget->removeTab(index);
+  }
+}
