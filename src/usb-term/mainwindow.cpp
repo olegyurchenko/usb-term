@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QFileInfo>
+#include "connectiondialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -157,6 +158,10 @@ void MainWindow::onExit()
 
 void MainWindow::onConnectionOpen()
 {
+  ConnectionDialog dialog(this);
+  if(dialog.exec() == QDialog::Accepted) {
+
+  }
 }
 
 void MainWindow::onConnectionSend()

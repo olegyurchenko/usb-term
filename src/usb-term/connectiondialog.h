@@ -15,6 +15,12 @@ public:
   explicit ConnectionDialog(QWidget *parent = nullptr);
   ~ConnectionDialog();
 
+  void setVid(uint16_t);
+  void setPid(uint16_t);
+
+  uint16_t vid() const;
+  uint16_t pid() const;
+
 private:
   Ui::ConnectionDialog *ui;
 };
