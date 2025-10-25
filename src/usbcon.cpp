@@ -384,7 +384,6 @@ static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
   dst->busNumber = libusb_get_bus_number(dev);
   dst->deviceAddress = libusb_get_device_address(dev);
 
-#if 0
   r = libusb_open(dev, &handle);
   if (r < 0) {
     trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
@@ -397,17 +396,16 @@ static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
     dst->serial = device_string_descriptor(handle, desc.iSerialNumber, "Serial");
 
     libusb_close(handle);
+  } else {
+    const char *str = usb_get_vendor_name(desc.idVendor);
+    if(str) {
+      dst->vendor = str;
+    }
+    str = usb_get_product_name(desc.idVendor, desc.idProduct);
+    if(str) {
+      dst->product = str;
+    }
   }
-#else
-  const char *str = usb_get_vendor_name(desc.idVendor);
-  if(str) {
-    dst->vendor = str;
-  }
-  str = usb_get_product_name(desc.idVendor, desc.idProduct);
-  if(str) {
-    dst->product = str;
-  }
-#endif
 
   return true;
 }

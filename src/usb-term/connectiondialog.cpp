@@ -45,9 +45,9 @@ void ConnectionDialog::setPid(uint16_t id)
 
 uint16_t ConnectionDialog::vid() const
 {
-
+  return ui->vidLineEdit->text().toUShort(nullptr, 16);
 }
 uint16_t ConnectionDialog::pid() const
 {
-
+  return ui->pidLineEdit->text().toUShort(nullptr, 16);
 }
