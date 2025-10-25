@@ -16,7 +16,19 @@
 #define USBCON_H_1761289625
 /*----------------------------------------------------------------------------*/
 #include <string>
+#include <vector>
 /*----------------------------------------------------------------------------*/
+struct UsbDeviceInfo {
+  uint16_t idVendor = 0;
+  uint16_t idProduct = 0;
+  int busNumber = 0;
+  int deviceAddress = 0;
+  std::string vendor;
+  std::string product;
+  std::string serial;
+};
+std::vector<UsbDeviceInfo> usbDeviceList();
+
 class UsbConnectionPrivate;
 class UsbConnection {
 protected:

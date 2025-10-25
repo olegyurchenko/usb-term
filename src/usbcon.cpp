@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 #include <stdexcept>
+#include "usb_ids.h"
 /*----------------------------------------------------------------------------*/
 static void trace(const char *file, int line, const char *format, ...) {
   va_list ap;
@@ -349,5 +350,94 @@ int UsbConnection :: write(const void *buffer, size_t size)
     //trace_hex(__FILE__, __LINE__, ">>", buffer, size);
   }
   return r;
+}
+/*----------------------------------------------------------------------------*/
+static std::string device_string_descriptor(libusb_device_handle *handle, uint8_t desc_index, const char *name) {
+  std::string result;
+  if (desc_index == 0) {
+    return result;
+  }
+
+  unsigned char str[256];
+  int res = libusb_get_string_descriptor_ascii(handle, desc_index, str, sizeof(str));
+  if (res > 0) {
+    result = (const char *)str;
+  } else {
+    trace(__FILE__, __LINE__, "Error libusb_get_string_descriptor_ascii() for %s: %s\n", name, libusb_error_name(res));
+  }
+  return result;
+}
+/*----------------------------------------------------------------------------*/
+static bool device_info(libusb_context *ctx, libusb_device *dev, UsbDeviceInfo *dst) {
+  struct libusb_device_descriptor desc;
+  libusb_device_handle *handle = nullptr;
+  int r;
+
+  r = libusb_get_device_descriptor(dev, &desc);
+  if (r < 0) {
+    trace(__FILE__, __LINE__, "Failed libusb_get_device_descriptor(): %d:%s\n", r, libusb_error_name(r));
+    return false;
+  }
+
+  dst->idVendor = desc.idVendor;
+  dst->idProduct = desc.idProduct;
+  dst->busNumber = libusb_get_bus_number(dev);
+  dst->deviceAddress = libusb_get_device_address(dev);
+
+  // Відкриття пристрою, щоб отримати доступ до дескрипторів рядків
+  //r = libusb_open(dev, &handle);
+  //if (r < 0) {
+  //  trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
+  //}
+  handle = libusb_open_device_with_vid_pid(ctx, desc.idVendor, desc.idProduct);
+
+
+  if (handle) {
+    dst->vendor = device_string_descriptor(handle, desc.iManufacturer, "Vendor");
+    dst->product = device_string_descriptor(handle, desc.iProduct, "Product");
+    dst->serial = device_string_descriptor(handle, desc.iSerialNumber, "Serial");
+
+    libusb_close(handle);
+  }
+  return true;
+}
+/*----------------------------------------------------------------------------*/
+std::vector<UsbDeviceInfo> usbDeviceList()
+{
+  libusb_device **devs = nullptr;
+  libusb_context *ctx = nullptr;
+  int r;
+  ssize_t cnt;
+  std::vector<UsbDeviceInfo> result;
+
+  do {
+    r = libusb_init(&ctx);
+    if (r < 0) {
+      trace(__FILE__, __LINE__, "Failed libusb_init(): %d:%s\n", r, libusb_error_name(r));
+      break;
+    }
+
+    cnt = libusb_get_device_list(ctx, &devs);
+    if (cnt < 0) {
+      trace(__FILE__, __LINE__, "Failed libusb_init(): %d:%s\n", cnt, libusb_error_name(cnt));
+      break;
+    }
+
+    for (ssize_t i = 0; i < cnt; i++) {
+      UsbDeviceInfo info;
+      if(device_info(ctx, devs[i], &info)) {
+        result.push_back(info);
+      }
+
+    }
+  } while(0);
+  if(devs) {
+    libusb_free_device_list(devs, 1);
+  }
+  if(ctx) {
+    libusb_exit(ctx);
+  }
+
+  return result;
 }
 /*----------------------------------------------------------------------------*/

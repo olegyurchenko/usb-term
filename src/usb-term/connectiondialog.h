@@ -2,15 +2,16 @@
 #define CONNECTIONDIALOG_H
 
 #include <QDialog>
-
+#include <vector>
 namespace Ui {
 class ConnectionDialog;
 }
 
+struct UsbDeviceInfo;
 class ConnectionDialog : public QDialog
 {
   Q_OBJECT
-
+  std::vector<UsbDeviceInfo> deviceVector;
 public:
   explicit ConnectionDialog(QWidget *parent = nullptr);
   ~ConnectionDialog();
@@ -21,6 +22,8 @@ public:
   uint16_t vid() const;
   uint16_t pid() const;
 
+protected slots:
+  void onDeviceChanged(int i);
 private:
   Ui::ConnectionDialog *ui;
 };
