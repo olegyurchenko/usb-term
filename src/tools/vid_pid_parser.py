@@ -30,7 +30,8 @@ def parse_usb_ids(filename):
 
 def generate_c_code(vendors, output_file):
     with open(output_file, 'w') as f:
-        f.write('#include <stdint.h>\n\n')
+        f.write('#include <stdint.h>\n')
+        f.write('#include <stddef.h>\n\n')
         f.write('typedef struct {\n')
         f.write('    uint16_t id;\n')
         f.write('    const char *name;\n')

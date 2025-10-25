@@ -1,7 +1,6 @@
 #include <stdint.h>
+#include <stddef.h>
 
-
-#define NULL ((void *)0)
 typedef struct {
     uint16_t id;
     const char *name;
@@ -29803,6 +29802,7 @@ static const usb_vendor_t usb_vendors[] = {
     {0xfc08, "Conrad Electronic SE", products_fc08, 1},
     {0xff00, "Power Delivery", NULL, 0},
     {0xffee, "FNK Tech", products_ffee, 1},
+    {0xBIAS, "4  Either Hand", NULL, 0},
 };
 
 #define USB_VENDOR_COUNT 3428
