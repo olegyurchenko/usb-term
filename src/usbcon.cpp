@@ -368,7 +368,7 @@ static std::string device_string_descriptor(libusb_device_handle *handle, uint8_
   return result;
 }
 /*----------------------------------------------------------------------------*/
-static bool device_info(libusb_context *ctx, libusb_device *dev, UsbDeviceInfo *dst) {
+static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
   struct libusb_device_descriptor desc;
   libusb_device_handle *handle = nullptr;
   int r;
@@ -384,12 +384,11 @@ static bool device_info(libusb_context *ctx, libusb_device *dev, UsbDeviceInfo *
   dst->busNumber = libusb_get_bus_number(dev);
   dst->deviceAddress = libusb_get_device_address(dev);
 
-  // Відкриття пристрою, щоб отримати доступ до дескрипторів рядків
-  //r = libusb_open(dev, &handle);
-  //if (r < 0) {
-  //  trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
-  //}
-  handle = libusb_open_device_with_vid_pid(ctx, desc.idVendor, desc.idProduct);
+#if 0
+  r = libusb_open(dev, &handle);
+  if (r < 0) {
+    trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
+  }
 
 
   if (handle) {
@@ -399,6 +398,17 @@ static bool device_info(libusb_context *ctx, libusb_device *dev, UsbDeviceInfo *
 
     libusb_close(handle);
   }
+#else
+  const char *str = usb_get_vendor_name(desc.idVendor);
+  if(str) {
+    dst->vendor = str;
+  }
+  str = usb_get_product_name(desc.idVendor, desc.idProduct);
+  if(str) {
+    dst->product = str;
+  }
+#endif
+
   return true;
 }
 /*----------------------------------------------------------------------------*/
@@ -425,7 +435,7 @@ std::vector<UsbDeviceInfo> usbDeviceList()
 
     for (ssize_t i = 0; i < cnt; i++) {
       UsbDeviceInfo info;
-      if(device_info(ctx, devs[i], &info)) {
+      if(device_info(devs[i], &info)) {
         result.push_back(info);
       }
 
