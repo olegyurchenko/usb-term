@@ -386,7 +386,7 @@ static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
 
   r = libusb_open(dev, &handle);
   if (r < 0) {
-    trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
+    //trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
   }
 
 
