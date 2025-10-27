@@ -33,7 +33,7 @@ void InputForm::addLogText(Cathegory cathegory, const QString& label, const QByt
   auto time = QTime::currentTime();
 
   auto title = QString(
-    "<p style=\"color: %1;\">%2 %3 %4</p>"
+    "<pre style=\"color: %1;\">%2 %3 %4\n"
     ).arg(
         cathegory == Error ? "red" : cathegory == Warning ? "while" : "navy",
         time.toString("hh:mm:ss"),
@@ -44,10 +44,9 @@ void InputForm::addLogText(Cathegory cathegory, const QString& label, const QByt
   text += title;
   text += "\n";
   if(!data.isEmpty()) {
-    text += "<pre style=\"color: navy;\">";
     text += hexDump(data);
-    text += "</pre>\n";
   }
+  text += "</pre>\n";
   ui->label->setText(text);
   timer.start();
 }
