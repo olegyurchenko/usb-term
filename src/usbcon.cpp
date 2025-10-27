@@ -197,8 +197,8 @@ public:
     // Find the device
     dst->dev_handle = libusb_open_device_with_vid_pid(dst->ctx, vendor_id, product_id);
     if (!dst->dev_handle) {
-      trace(__FILE__, __LINE__, "Device not found: VID=0x%04X, PID=0x%04X\n", vendor_id, product_id);
-      dst->message = string_format("Device not found: VID=0x%04X, PID=0x%04X", vendor_id, product_id);
+      trace(__FILE__, __LINE__, "Open device error: VID=0x%04X, PID=0x%04X\n", vendor_id, product_id);
+      dst->message = string_format("Open device error: VID=0x%04X, PID=0x%04X", vendor_id, product_id);
       return -1;
     }
 
