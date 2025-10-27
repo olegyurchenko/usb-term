@@ -211,7 +211,7 @@ void MainWindow::onConnectionSend()
     return;
   }
   auto data = parseText(form->text());
-  ui->inputForm->addLogText(InputForm::Info, tr("Sent"), data);
+  ui->inputForm->addLogText(InputForm::Info, QString("%1(%2)").arg(tr("Sent"), QString::number(data.size())), data);
   connection->write(data.data(), data.size());
   if(connection->isError()) {
     ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
@@ -265,7 +265,7 @@ void MainWindow :: onTimer()
     char buffer[1024];
     int size = connection->read(buffer, sizeof(buffer), 10);
     if(size > 0) {
-      ui->inputForm->addLogText(InputForm::Info, tr("Received"), QByteArray(buffer, size));
+      ui->inputForm->addLogText(InputForm::Info, QString("%1(%2)").arg(tr("Received"), QString::number(size)), QByteArray(buffer, size));
     }
     if(size < 0) {
       ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
