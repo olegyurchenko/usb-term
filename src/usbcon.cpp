@@ -18,7 +18,7 @@
 #include <libusb-1.0/libusb.h>
 #include <memory>
 #include <string>
-#include <stdexcept>
+//#include <stdexcept>
 #include "usb_ids.h"
 /*----------------------------------------------------------------------------*/
 static void trace(const char *file, int line, const char *format, ...) {
@@ -29,15 +29,22 @@ static void trace(const char *file, int line, const char *format, ...) {
   va_end(ap);
 }
 /*----------------------------------------------------------------------------*/
-//From stackoverflow )
-template<typename ... Args>
-std::string string_format( const std::string& format, Args ... args )
+std::string string_format( const char *format, ... )
 {
-  int size_s = std::snprintf( nullptr, 0, format.c_str(), args ... ) + 1; // Extra space for '\0'
-  if( size_s <= 0 ){ throw std::runtime_error( "Error during formatting." ); }
+  va_list ap;
+  va_start(ap, format);
+  int size_s = vsnprintf( nullptr, 0, format, ap) + 1; // Extra space for '\0'
+  va_end(ap);
+  if( size_s <= 0 ){
+    //throw std::runtime_error( "Error during formatting." );
+    trace(__FILE__, __LINE__, "Error format string: `%s`\n", format);
+    return std::string();
+  }
+  va_start(ap, format);
   auto size = static_cast<size_t>( size_s );
   std::unique_ptr<char[]> buf( new char[ size ] );
-  std::snprintf( buf.get(), size, format.c_str(), args ... );
+  vsnprintf( buf.get(), size, format, ap);
+  va_end(ap);
   return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
 }
 /*----------------------------------------------------------------------------*/
@@ -191,7 +198,7 @@ public:
     dst->dev_handle = libusb_open_device_with_vid_pid(dst->ctx, vendor_id, product_id);
     if (!dst->dev_handle) {
       trace(__FILE__, __LINE__, "Device not found: VID=0x%04X, PID=0x%04X\n", vendor_id, product_id);
-      dst->message = string_format("Device not found: VID=0x%04X, PID=0x%04", vendor_id, product_id);
+      dst->message = string_format("Device not found: VID=0x%04X, PID=0x%04X", vendor_id, product_id);
       return -1;
     }
 
@@ -386,7 +393,7 @@ static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
 
   r = libusb_open(dev, &handle);
   if (r < 0) {
-    //trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
+    trace(__FILE__, __LINE__, "Failed libusb_open(): %d:%s\n", r, libusb_error_name(r));
   }
 
 
@@ -396,6 +403,8 @@ static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
     dst->serial = device_string_descriptor(handle, desc.iSerialNumber, "Serial");
 
     libusb_close(handle);
+  } else {
+    return false;
   }
 
   //Get vendor and product name from hardcoded DB
