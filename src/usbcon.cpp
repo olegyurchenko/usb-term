@@ -396,7 +396,10 @@ static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
     dst->serial = device_string_descriptor(handle, desc.iSerialNumber, "Serial");
 
     libusb_close(handle);
-  } else {
+  }
+
+  //Get vendor and product name from hardcoded DB
+  if(dst->vendor.empty() && dst->product.empty()) {
     const char *str = usb_get_vendor_name(desc.idVendor);
     if(str) {
       dst->vendor = str;

@@ -6,12 +6,14 @@
 #include <QCloseEvent>
 #include <QFileInfo>
 #include "connectiondialog.h"
+#include "usbcon.h"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
   , ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+  connection = new UsbConnection();
   onFileNew();
   ui->tabWidget->setTabsClosable(true);
   connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::onTabCloseRequest);
@@ -160,7 +162,12 @@ void MainWindow::onConnectionOpen()
 {
   ConnectionDialog dialog(this);
   if(dialog.exec() == QDialog::Accepted) {
-
+    auto vid = dialog.vid();
+    auto pid = dialog.pid();
+    if(!connection->open(vid, pid)) {
+      QMessageBox::critical(this, tr("Error open connection"), QString::fromStdString(connection->message()));
+      return;
+    }
   }
 }
 
