@@ -14,7 +14,8 @@ SOURCES += \
     connectiondialog.cpp \
     main.cpp \
     mainwindow.cpp \
-    outputform.cpp
+    outputform.cpp \
+    text_parser.cpp
 
 HEADERS += \
     connectiondialog.h \
