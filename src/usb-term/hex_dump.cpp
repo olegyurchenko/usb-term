@@ -40,7 +40,7 @@ QString hexDump(const QByteArray& data) {
   for (int i = 0; i < dataSize; i += bytesPerRow) {
     // 1. Output the offset (address)
     // Format: 8-digit hex number, padded with zero.
-    stream << QString("%1: ").arg(i, 8, 16, QChar('0')).toUpper();
+    stream << QString("%1: ").arg(i, 4, 16, QChar('0')).toUpper();
 
     // Temporary strings for the two sections of the row
     QString hexSection;
@@ -78,7 +78,7 @@ QString hexDump(const QByteArray& data) {
 
     // 3. Combine sections and write to the output stream
     // Hex section is left-aligned, followed by a separator and ASCII section.
-    stream << hexSection.leftJustified((bytesPerRow * 3) + 1, ' ') << " |" << asciiSection << "|\n";
+    stream << hexSection.leftJustified((bytesPerRow * 3) + 1, ' ') << " " << asciiSection << "\n";
   }
 
   return output;

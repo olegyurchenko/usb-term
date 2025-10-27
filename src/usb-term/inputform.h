@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QElapsedTimer>
+#include <QTimer>
 
 namespace Ui {
 class InputForm;
@@ -11,7 +12,8 @@ class InputForm;
 class InputForm : public QWidget
 {
   Q_OBJECT
-  QElapsedTimer m_timer;
+  QTimer timer;
+  QElapsedTimer elapsedTimer;
 public:
   enum Cathegory {
     Info,
@@ -26,6 +28,7 @@ public:
 
 protected slots:
   void onClear();
+  void onAfterLog();
 
 private:
   Ui::InputForm *ui;

@@ -9,6 +9,10 @@ InputForm::InputForm(QWidget *parent) :
   ui(new Ui::InputForm)
 {
   ui->setupUi(this);
+  timer.setSingleShot(true);
+  timer.setInterval(100);
+
+  connect(&timer, &QTimer::timeout, this, &InputForm::onAfterLog);
 }
 
 InputForm::~InputForm()
@@ -22,7 +26,7 @@ void InputForm::onClear()
 }
 
 void InputForm::addLogText(Cathegory cathegory, const QString& label, const QByteArray& data) {
-  int elapsed = m_timer.restart();
+  int elapsed = elapsedTimer.restart();
   if(elapsed < 0) {
     elapsed = 0;
   }
@@ -40,10 +44,15 @@ void InputForm::addLogText(Cathegory cathegory, const QString& label, const QByt
   text += title;
   text += "\n";
   if(!data.isEmpty()) {
-    text += "<pre>";
+    text += "<pre style=\"color: navy;\">";
     text += hexDump(data);
     text += "</pre>\n";
   }
   ui->label->setText(text);
+  timer.start();
+}
+
+void InputForm::onAfterLog()
+{
   ui->scrollArea->verticalScrollBar()->setValue(ui->scrollArea->verticalScrollBar()->maximum());
 }

@@ -315,17 +315,17 @@ int UsbConnection :: read(void *buffer, size_t size, uint32_t ms)
   int actual_length = 0;
   int r = libusb_bulk_transfer(con->dev_handle, con->read_ep, static_cast<unsigned char *>(buffer), size, &actual_length, ms);
   if (r < 0) {
-    trace(__FILE__, __LINE__, "Failed to read data: %s, timeout:%u\n", libusb_error_name(r), ms);
     if(r == LIBUSB_ERROR_TIMEOUT) {
       r = 0;
     } else {
       if (r == LIBUSB_ERROR_NO_DEVICE) {
         trace(__FILE__, __LINE__, "Printer disconnected or reset! Re-establishing connection...\n");
         con->must_reopen = 1;
+      } else {
+        trace(__FILE__, __LINE__, "Failed to read data: %s, timeout:%u\n", libusb_error_name(r), ms);
+        m_error = r;
+        m_message = libusb_error_name(r);
       }
-
-      m_error = r;
-      m_message = libusb_error_name(r);
     }
   } else {
     r = actual_length;

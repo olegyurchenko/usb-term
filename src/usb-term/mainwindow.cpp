@@ -128,6 +128,11 @@ void MainWindow::onFileSave()
     return;
   }
 
+  QFileInfo fileInfo(fileName);
+  if(fileInfo.suffix().isEmpty()) {
+    fileName += ".txt";
+  }
+
   form->saveFile(fileName);
   onTabChanged();
 }
@@ -145,6 +150,12 @@ void MainWindow::onFileSaveAs()
   if(fileName.isEmpty()) {
     return;
   }
+
+  QFileInfo fileInfo(fileName);
+  if(fileInfo.suffix().isEmpty()) {
+    fileName += ".txt";
+  }
+
 
   form->saveFile(fileName);
   onTabChanged();
@@ -191,7 +202,7 @@ void MainWindow::onConnectionSend()
     return;
   }
   auto data = parseText(form->text());
-  ui->inputForm->addLogText(InputForm::Info, tr("Send"), data);
+  ui->inputForm->addLogText(InputForm::Info, tr("Sent"), data);
   connection->write(data.data(), data.size());
   if(connection->isError()) {
     ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
