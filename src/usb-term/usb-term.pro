@@ -12,6 +12,7 @@ SOURCES += \
     ../usb_ids.c \
     ../usbcon.cpp \
     connectiondialog.cpp \
+    hex_dump.cpp \
     main.cpp \
     mainwindow.cpp \
     outputform.cpp \
