@@ -35,14 +35,13 @@ void InputForm::addLogText(Cathegory cathegory, const QString& label, const QByt
   auto title = QString(
     "<pre style=\"color: %1;\">%2 %3 %4\n"
     ).arg(
-        cathegory == Error ? "red" : cathegory == Warning ? "while" : "navy",
+        cathegory == Error ? "red" : cathegory == Warning ? "orange" : "navy",
         time.toString("hh:mm:ss"),
-        QString::number(elapsed),
+        QString("%1").arg(elapsed, 6),
         label
         );
   auto text = ui->label->text();
   text += title;
-  text += "\n";
   if(!data.isEmpty()) {
     text += hexDump(data);
   }

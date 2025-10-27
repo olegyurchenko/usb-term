@@ -86,6 +86,7 @@ void MainWindow::onFileNew()
   auto form = new OutputForm(this);
   connect(form, &OutputForm::fileChanged, this, &MainWindow::onFileChanged, Qt::QueuedConnection);
   ui->tabWidget->addTab(form, tr("unknown"));
+  ui->tabWidget->setCurrentIndex(ui->tabWidget->count() - 1);
 }
 
 void MainWindow::onFileOpen()
@@ -99,11 +100,19 @@ void MainWindow::onFileOpen()
   }
 
   auto fileName = form->fileName();
-  if(fileName.isEmpty()) {
-    fileName = QFileDialog::getOpenFileName(this,
+  if(!fileName.isEmpty()) {
+    onFileNew();
+    form = activeForm();
+    if(!form) {
+      return;
+    }
+    fileName.clear();
+  }
+
+  fileName = QFileDialog::getOpenFileName(this,
                                             tr("Open file"), "",
                                             tr("Text files (*.txt);;All files(*.*)"));
-  }
+
   if(fileName.isEmpty()) {
     return;
   }
