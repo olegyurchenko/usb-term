@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -13,6 +14,7 @@ class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
+  QTimer *timer;
   UsbConnection *connection;
   OutputForm *activeForm();
   bool modifiedQuestion(OutputForm *form);
@@ -36,6 +38,7 @@ protected slots:
   void onTabChanged();
   void onFileChanged();
   void onTabCloseRequest(int index);
+  void onTimer();
 
 private:
   Ui::MainWindow *ui;

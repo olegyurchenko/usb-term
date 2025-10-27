@@ -13,6 +13,7 @@ SOURCES += \
     ../usbcon.cpp \
     connectiondialog.cpp \
     hex_dump.cpp \
+    inputform.cpp \
     main.cpp \
     mainwindow.cpp \
     outputform.cpp \
@@ -20,11 +21,13 @@ SOURCES += \
 
 HEADERS += \
     connectiondialog.h \
+    inputform.h \
     mainwindow.h \
     outputform.h
 
 FORMS += \
     connectiondialog.ui \
+    inputform.ui \
     mainwindow.ui \
     outputform.ui
 

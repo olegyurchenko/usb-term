@@ -29,20 +29,7 @@
         <number>-1</number>
        </property>
       </widget>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>Input</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="outputLabel">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+      <widget class="InputForm" name="inputForm" native="true"/>
      </widget>
     </item>
    </layout>
@@ -53,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuF_ile">
@@ -219,6 +206,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>InputForm</class>
+   <extends>QWidget</extends>
+   <header>inputform.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resources/resource.qrc"/>
  </resources>

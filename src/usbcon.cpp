@@ -404,7 +404,7 @@ static bool device_info(libusb_device *dev, UsbDeviceInfo *dst) {
 
     libusb_close(handle);
   } else {
-    //return false;
+    return false;
   }
 
   //Get vendor and product name from hardcoded DB

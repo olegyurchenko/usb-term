@@ -7,6 +7,8 @@
 #include <QFileInfo>
 #include "connectiondialog.h"
 #include "usbcon.h"
+#include "inputform.h"
+#include "text_parser.h"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -17,10 +19,18 @@ MainWindow::MainWindow(QWidget *parent)
   onFileNew();
   ui->tabWidget->setTabsClosable(true);
   connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::onTabCloseRequest);
+
+  timer = new QTimer();
+  timer->setSingleShot(false);
+  connect(timer, &QTimer::timeout, this, &MainWindow::onTimer);
+  timer->setInterval(20);
+  timer->start();
 }
 
 MainWindow::~MainWindow()
 {
+  delete timer;
+  delete connection;
   delete ui;
 }
 
@@ -168,15 +178,32 @@ void MainWindow::onConnectionOpen()
       QMessageBox::critical(this, tr("Error open connection"), QString::fromStdString(connection->message()));
       return;
     }
+    ui->actionConnectionOpen->setEnabled(false);
+    ui->actionConnectionClose->setEnabled(true);
+    ui->actionSendData->setEnabled(true);
   }
 }
 
 void MainWindow::onConnectionSend()
 {
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  auto data = parseText(form->text());
+  ui->inputForm->addLogText(InputForm::Info, tr("Send"), data);
+  connection->write(data.data(), data.size());
+  if(connection->isError()) {
+    ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
+  }
 }
 
 void MainWindow::onConnectionClose()
 {
+  connection->close();
+  ui->actionConnectionOpen->setEnabled(true);
+  ui->actionConnectionClose->setEnabled(false);
+  ui->actionSendData->setEnabled(false);
 }
 
 void MainWindow::onTabChanged()
@@ -209,5 +236,19 @@ void MainWindow::onTabCloseRequest(int index)
   OutputForm *form = qobject_cast<OutputForm *>(w);
   if(form && modifiedQuestion(form)) {
     ui->tabWidget->removeTab(index);
+  }
+}
+
+void MainWindow :: onTimer()
+{
+  if(connection->isOpened()) {
+    char buffer[1024];
+    int size = connection->read(buffer, sizeof(buffer), 10);
+    if(size > 0) {
+      ui->inputForm->addLogText(InputForm::Info, tr("Received"), QByteArray(buffer, size));
+    }
+    if(size < 0) {
+      ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
+    }
   }
 }
