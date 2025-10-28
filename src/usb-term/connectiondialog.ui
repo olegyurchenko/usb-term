@@ -14,7 +14,7 @@
    <string>USB Connection</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/resource.qrc">
+   <iconset resource="img/resource.qrc">
     <normaloff>:/connect.png</normaloff>:/connect.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -92,7 +92,7 @@ Use lsusb for get id</string>
   </layout>
  </widget>
  <resources>
-  <include location="../resources/resource.qrc"/>
+  <include location="img/resource.qrc"/>
  </resources>
  <connections>
   <connection>

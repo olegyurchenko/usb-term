@@ -14,7 +14,7 @@
    <string>USB terminal</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/resource.qrc">
+   <iconset resource="resource.qrc">
     <normaloff>:/connect.png</normaloff>:/connect.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -93,7 +93,7 @@
   </widget>
   <action name="actionNew">
    <property name="icon">
-    <iconset resource="../resources/resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/filenew.png</normaloff>:/filenew.png</iconset>
    </property>
    <property name="text">
@@ -108,7 +108,7 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="../resources/resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/fileopen.png</normaloff>:/fileopen.png</iconset>
    </property>
    <property name="text">
@@ -126,7 +126,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources/resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/filesave.png</normaloff>:/filesave.png</iconset>
    </property>
    <property name="text">
@@ -149,7 +149,7 @@
   </action>
   <action name="actionConnectionOpen">
    <property name="icon">
-    <iconset resource="../resources/resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/connect.png</normaloff>:/connect.png</iconset>
    </property>
    <property name="text">
@@ -164,7 +164,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources/resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/disconnect.png</normaloff>:/disconnect.png</iconset>
    </property>
    <property name="text">
@@ -179,7 +179,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources/resource.qrc">
+    <iconset resource="resource.qrc">
      <normaloff>:/send_file.png</normaloff>:/send_file.png</iconset>
    </property>
    <property name="text">
@@ -215,7 +215,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/resource.qrc"/>
+  <include location="resource.qrc"/>
  </resources>
  <connections>
   <connection>
