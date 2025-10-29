@@ -3,14 +3,17 @@
 
 #include <QWidget>
 
+
 namespace Ui {
 class OutputForm;
 }
 
+class TextHighlighter;
 class OutputForm : public QWidget
 {
   Q_OBJECT
   QString m_fileName;
+  TextHighlighter *textHighlighter;
 public:
   explicit OutputForm(QWidget *parent = nullptr);
   ~OutputForm();

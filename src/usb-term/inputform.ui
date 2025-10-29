@@ -63,7 +63,7 @@
   </layout>
   <action name="actionClear">
    <property name="icon">
-    <iconset resource="../resources/resource.qrc">
+    <iconset resource="img/resource.qrc">
      <normaloff>:/clear.png</normaloff>:/clear.png</iconset>
    </property>
    <property name="text">
@@ -75,7 +75,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resources/resource.qrc"/>
+  <include location="img/resource.qrc"/>
  </resources>
  <connections>
   <connection>
