@@ -36,18 +36,23 @@ protected:
   void highlightBlock(const QString &text) override;
 
 private:
+  enum {
+    NormalState = -1, // Стандартний стан
+    InString = 1      // Стан "Всередині багаторядкового рядка"
+  };
+
   struct HighlightingRule
   {
     QRegularExpression pattern;
     QTextCharFormat format;
   };
-  QVector<HighlightingRule> highlightingRules;
+  QVector<HighlightingRule> singleLineRules;
 
-  // Формати для різних елементів
-  QTextCharFormat commentFormat;
+  // Регулярні вирази та формати для багаторядкових об'єктів
+  QRegularExpression stringDelimiter; // Просто лапка (")
   QTextCharFormat stringFormat;
+  QTextCharFormat commentFormat;
   QTextCharFormat hexByteFormat;
-
   void setupRules();
 };
 /*----------------------------------------------------------------------------*/
