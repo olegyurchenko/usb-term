@@ -43,7 +43,7 @@ QByteArray parseText(const QString& text) {
   // Group 2: String content (unescaped part)
   // Group 3: Hexadecimal byte token
   // Group 4: Delimiters (whitespace or comma)
-  QRegularExpression tokenRegex("(\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\")|([0-9a-fA-F]+)|([\\s,]+)");
+  QRegularExpression tokenRegex("(\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\")|([0-9a-fA-F]{1,2})|([\\s,]+)");
 
   int offset = 0;
   while (offset < cleanText.length()) {

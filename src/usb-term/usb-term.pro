@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     inputform.cpp \
+    text_highlighter.cpp \
     usb_ids.c \
     usbcon.cpp \
     connectiondialog.cpp \
@@ -23,7 +24,8 @@ HEADERS += \
     connectiondialog.h \
     inputform.h \
     mainwindow.h \
-    outputform.h
+    outputform.h \
+    text_highlighter.h
 
 FORMS += \
     connectiondialog.ui \

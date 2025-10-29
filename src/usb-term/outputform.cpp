@@ -2,6 +2,7 @@
 #include "ui_outputform.h"
 #include <QMessageBox>
 #include <QFile>
+#include "text_highlighter.h"
 
 OutputForm::OutputForm(QWidget *parent) :
   QWidget(parent),
@@ -9,10 +10,12 @@ OutputForm::OutputForm(QWidget *parent) :
 {
   ui->setupUi(this);
   connect(ui->edit, &QPlainTextEdit::textChanged, this, &OutputForm::fileChanged);
+  textHighlighter = new TextHighlighter(ui->edit->document());
 }
 
 OutputForm::~OutputForm()
 {
+  delete textHighlighter;
   delete ui;
 }
 

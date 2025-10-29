@@ -16351,7 +16351,7 @@ static const usb_id_t products_0ec7[] = {
 };
 
 static const usb_id_t products_0ecd[] = {
-    {0x1400, "CD\RW 40X"},
+    {0x1400, "CD\\RW 40X"},
     {0xa100, "LDW-411SX DVD/CD Rewritable Drive"},
 };
 

@@ -30,6 +30,7 @@ set(PROJECT_SOURCES
         inputform.cpp inputform.h inputform.ui
         outputform.cpp outputform.h outputform.ui
         text_parser.cpp
+        text_highlighter.cpp text_highlighter.h
         resource.qrc
 )
 
