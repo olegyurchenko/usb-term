@@ -25,6 +25,7 @@
 #include <QPlainTextEdit>
 #include <QBrush>
 #include <QColor>
+#include <QtDebug>
 
 TextHighlighter::TextHighlighter(QTextDocument *parent)
   : QSyntaxHighlighter(parent)
@@ -45,7 +46,7 @@ void TextHighlighter::setupRules()
   stringFormat.setFontWeight(QFont::Bold);
 
   // 1. Коментарі (#...)
-  singleLineRules.append({QRegularExpression("#.*"), commentFormat});
+  commentRules.append({QRegularExpression("#.*$"), commentFormat});
 
   // 2. Шістнадцяткові байти (1 або 2 символи)
   // Використовуємо \\b для точного виділення токенів
@@ -61,6 +62,8 @@ void TextHighlighter::highlightBlock(const QString &text)
 {
   setCurrentBlockState(NormalState);
   int startIndex = 0;
+  int length = text.length();
+  int endIndex = length;
 
   // -----------------------------------------------------------
   // 1. Обробка продовження багаторядкового рядка (InString)
@@ -68,7 +71,6 @@ void TextHighlighter::highlightBlock(const QString &text)
   if (previousBlockState() == InString) {
     // Рядок почався у попередньому блоці. Підсвічуємо з самого початку.
     startIndex = 0;
-
     // Шукаємо закриваючу лапку
     QRegularExpressionMatch match = stringDelimiter.match(text, startIndex);
 
@@ -88,15 +90,30 @@ void TextHighlighter::highlightBlock(const QString &text)
     }
   }
 
+  //Handle comments
+  for (const HighlightingRule &rule : qAsConst(commentRules)) {
+    QRegularExpressionMatch match = rule.pattern.match(text, startIndex);
+    if(match.hasMatch()) {
+      int start = match.capturedStart(0);
+      setFormat(match.capturedStart(0), length - match.capturedStart(0), rule.format);
+      if(start < endIndex) {
+        endIndex = start;
+      }
+    }
+  }
+
   // -----------------------------------------------------------
-  // 2. Обробка однорядкових правил (Hex, Коментарі)
+  // 2. Обробка однорядкових правил (Hex...)
   // -----------------------------------------------------------
   // Застосовуємо ці правила, починаючи з поточного startIndex (після багаторядкового рядка)
   for (const HighlightingRule &rule : qAsConst(singleLineRules)) {
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text, startIndex);
     while (matchIterator.hasNext()) {
       QRegularExpressionMatch match = matchIterator.next();
-      setFormat(match.capturedStart(0), match.capturedLength(0), rule.format);
+      if(match.capturedEnd(0) <= endIndex && match.capturedStart(0) < endIndex) {
+        setFormat(match.capturedStart(0), match.capturedLength(0), rule.format);
+      }
+      //qDebug() << text << "|" << match.capturedStart(0) << "|" <<  match.capturedLength(0);
     }
   }
 
@@ -108,7 +125,9 @@ void TextHighlighter::highlightBlock(const QString &text)
 
   while (startMatch.hasMatch()) {
     int start = startMatch.capturedStart(0);
-
+    if(start >= endIndex) {
+      break;
+    }
     // Шукаємо закриваючу лапку, починаючи одразу після відкритої
     QRegularExpressionMatch endMatch = stringDelimiter.match(text, start + 1);
 

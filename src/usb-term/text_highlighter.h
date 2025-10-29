@@ -47,6 +47,7 @@ private:
     QTextCharFormat format;
   };
   QVector<HighlightingRule> singleLineRules;
+  QVector<HighlightingRule> commentRules;
 
   // Регулярні вирази та формати для багаторядкових об'єктів
   QRegularExpression stringDelimiter; // Просто лапка (")
