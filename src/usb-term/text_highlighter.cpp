@@ -63,7 +63,6 @@ void TextHighlighter::highlightBlock(const QString &text)
   setCurrentBlockState(NormalState);
   int startIndex = 0;
   int length = text.length();
-  int endIndex = length;
 
   // -----------------------------------------------------------
   // 1. Обробка продовження багаторядкового рядка (InString)
@@ -90,18 +89,6 @@ void TextHighlighter::highlightBlock(const QString &text)
     }
   }
 
-  //Handle comments
-  for (const HighlightingRule &rule : qAsConst(commentRules)) {
-    QRegularExpressionMatch match = rule.pattern.match(text, startIndex);
-    if(match.hasMatch()) {
-      int start = match.capturedStart(0);
-      setFormat(match.capturedStart(0), length - match.capturedStart(0), rule.format);
-      if(start < endIndex) {
-        endIndex = start;
-      }
-    }
-  }
-
   // -----------------------------------------------------------
   // 2. Обробка однорядкових правил (Hex...)
   // -----------------------------------------------------------
@@ -110,9 +97,7 @@ void TextHighlighter::highlightBlock(const QString &text)
     QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text, startIndex);
     while (matchIterator.hasNext()) {
       QRegularExpressionMatch match = matchIterator.next();
-      if(match.capturedEnd(0) <= endIndex && match.capturedStart(0) < endIndex) {
-        setFormat(match.capturedStart(0), match.capturedLength(0), rule.format);
-      }
+      setFormat(match.capturedStart(0), match.capturedLength(0), rule.format);
       //qDebug() << text << "|" << match.capturedStart(0) << "|" <<  match.capturedLength(0);
     }
   }
@@ -125,9 +110,6 @@ void TextHighlighter::highlightBlock(const QString &text)
 
   while (startMatch.hasMatch()) {
     int start = startMatch.capturedStart(0);
-    if(start >= endIndex) {
-      break;
-    }
     // Шукаємо закриваючу лапку, починаючи одразу після відкритої
     QRegularExpressionMatch endMatch = stringDelimiter.match(text, start + 1);
 
@@ -148,6 +130,15 @@ void TextHighlighter::highlightBlock(const QString &text)
     // Шукаємо наступний початок рядка після попереднього знайденого
     startMatch = stringDelimiter.match(text, startIndex);
   }
+
+  //Handle comments
+  for (const HighlightingRule &rule : qAsConst(commentRules)) {
+    QRegularExpressionMatch match = rule.pattern.match(text, startIndex);
+    if(match.hasMatch()) {
+      setFormat(match.capturedStart(0), length - match.capturedStart(0), rule.format);
+    }
+  }
+
 }
 
 /*

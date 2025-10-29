@@ -33,6 +33,7 @@
 QByteArray parseText(const QString& text) {
   QByteArray result;
 
+  //TODO: First, you need to select the \" lines of text \" (Comment char '#' may be in quote : " # ").
   // 1. Remove comments (# to end of line)
   QString cleanText = text;
   QRegularExpression commentRegex("#.*");

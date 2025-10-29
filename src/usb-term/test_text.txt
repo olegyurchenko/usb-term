@@ -1,9 +1,10 @@
-"Single String content\r\n" 11,12  #String + hex(11) + hex(12)
+"Single String content\r\n ###" 11,12  #String + hex(11) + hex(12)
 #This is comment
 "Multiline String
-content ###
+content
 1
 2
 " 11 22 33 #Must generate 'Multiline String\ncontent\n1\n2\n
 1a 2B 33 44 A B a b 
+"\r\f"
 qqq www eee
