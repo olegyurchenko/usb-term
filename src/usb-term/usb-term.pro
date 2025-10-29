@@ -9,11 +9,11 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ../usb_ids.c \
-    ../usbcon.cpp \
+    inputform.cpp \
+    usb_ids.c \
+    usbcon.cpp \
     connectiondialog.cpp \
     hex_dump.cpp \
-    inputform.cpp \
     main.cpp \
     mainwindow.cpp \
     outputform.cpp \
@@ -31,9 +31,9 @@ FORMS += \
     mainwindow.ui \
     outputform.ui
 
+RESOURCES += \
+  resource.qrc
 
-INCLUDEPATH += \
-../
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -54,5 +54,4 @@ win32 {
     #LIBS += -liso7816 -L../../lib/linux.$$QT_ARCH
 }
 
-RESOURCES += \
-  ../resources/resource.qrc
+

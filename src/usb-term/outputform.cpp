@@ -1,6 +1,7 @@
 #include "outputform.h"
 #include "ui_outputform.h"
 #include <QMessageBox>
+#include <QFile>
 
 OutputForm::OutputForm(QWidget *parent) :
   QWidget(parent),
