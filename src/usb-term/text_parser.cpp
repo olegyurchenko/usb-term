@@ -20,42 +20,40 @@
 #include <QDebug>
 
 /**
- * @brief Parses a text block according to specific rules.
- * * The parsing rules are:
- * 1. Comments start with '#' and run to the end of the line.
- * 2. Strings are enclosed in double quotes (") and support C-style escape sequences (\n, \t, \", \\).
- * 3. Delimiters are blank characters (spaces, tabs) and commas.
- * 4. Individual words are two-character hexadecimal bytes (e.g., '5A', 'ff') without '0x' or 'h'.
- * * This version uses !match.captured(N).isEmpty() for group checks, which is fully compatible.
- * @param text The input text block (QString).
+ * @brief Parses a text block containing strings, hex bytes, delimiters, and comments.
+ * * Comments (#) are handled during tokenization to prevent them from interfering
+ * with string literals (e.g., "string # comment").
+ * * @param text The input text block (QString).
  * @return QByteArray containing the parsed data (bytes from strings and hex values).
  */
 QByteArray parseText(const QString& text) {
   QByteArray result;
 
-  //TODO: First, you need to select the \" lines of text \" (Comment char '#' may be in quote : " # ").
-  // 1. Remove comments (# to end of line)
-  QString cleanText = text;
-  QRegularExpression commentRegex("#.*");
-  cleanText.remove(commentRegex);
+  // The initial step of removing comments is removed, as they are now handled by the regex.
+  QString inputText = text;
 
-  // 2. Define a regex to find tokens:
-  // Group 1: Full String token
-  // Group 2: String content (unescaped part)
-  // Group 3: Hexadecimal byte token
-  // Group 4: Delimiters (whitespace or comma)
-  QRegularExpression tokenRegex("(\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\")|([0-9a-fA-F]{1,2})|([\\s,]+)");
+  // Regex definition using five capturing groups (excluding Group 0 - full match):
+  // Group 1 & 2: String literal ("...") - Must be first for priority.
+  // Group 3: Comment (#.*) - New group to handle comments inline.
+  // Group 4: Hex Byte (1 or 2 chars, e.g., 50, f, AA).
+  // Group 5: Delimiters (whitespace, comma).
+  QRegularExpression tokenRegex(
+        "(\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\")"   // Group 1 & 2: String token (full & content)
+        "|(#.*)"                                  // Group 3: Comment token
+        "|([0-9a-fA-F]{1,2})"                     // Group 4: Hex Byte token
+        "|([\\s,]+)"                              // Group 5: Delimiter token
+        );
 
   int offset = 0;
-  while (offset < cleanText.length()) {
-    QRegularExpressionMatch match = tokenRegex.match(cleanText, offset);
+  while (offset < inputText.length()) {
+    QRegularExpressionMatch match = tokenRegex.match(inputText, offset);
 
     if (match.hasMatch() && match.capturedStart() == offset) {
       offset = match.capturedEnd();
 
-      // Handle String literal: Check if Group 1 (full string token) is not empty.
+      // Handle String literal (Group 1 - full match, Group 2 - content)
+      // Check if Group 1 (the full string token) is not empty.
       if (!match.captured(1).isEmpty()) {
-        // Get the string content (Group 2)
         QString content = match.captured(2);
 
         // Simple C-style escape sequences unescaping.
@@ -66,14 +64,20 @@ QByteArray parseText(const QString& text) {
         unescapedContent.replace("\\\"", "\"");
         unescapedContent.replace("\\\\", "\\");
 
-        // Append string as UTF-8 bytes
+        // Append unescaped string as UTF-8 bytes
         result.append(unescapedContent.toUtf8());
 
-        // Handle Hexadecimal byte: Check if Group 3 (hex byte token) is not empty.
+        // Handle Comment (Group 3)
+        // Check if Group 3 (the comment token) is not empty.
       } else if (!match.captured(3).isEmpty()) {
-        QString hexByte = match.captured(3);
+        // Ignore the comment; the offset has already been advanced past it.
+
+        // Handle Hexadecimal byte (Group 4)
+        // Check if Group 4 (the hex byte token) is not empty.
+      } else if (!match.captured(4).isEmpty()) {
+        QString hexByte = match.captured(4);
         bool ok;
-        // Convert 2-char hex string to an 8-bit unsigned integer (byte)
+        // Convert 1 or 2-char hex string to an 8-bit unsigned integer (byte)
         char byteValue = hexByte.toUShort(&ok, 16);
 
         if (ok) {
@@ -82,13 +86,14 @@ QByteArray parseText(const QString& text) {
           qWarning() << "Parsing error for hex byte:" << hexByte;
         }
 
-        // Handle Delimiters: Check if Group 4 (delimiter token) is not empty.
-      } else if (!match.captured(4).isEmpty()) {
+        // Handle Delimiters (Group 5)
+        // Check if Group 5 (the delimiter token) is not empty.
+      } else if (!match.captured(5).isEmpty()) {
         // Ignore delimiters, just advance the offset
       }
     } else {
       // Unexpected character or unrecognised token at current position
-      QString errorSnippet = cleanText.mid(offset, 10);
+      QString errorSnippet = inputText.mid(offset, 10);
       qWarning() << "Syntax error at position" << offset << ". Unexpected text:" << errorSnippet << "...";
       break;
     }
@@ -98,18 +103,18 @@ QByteArray parseText(const QString& text) {
 }
 
 // -----------------------------------------------------------------------------
-// Example Usage Function
+// Example Usage Function (parseTest for demonstration)
 // -----------------------------------------------------------------------------
-
+/*
 void parseTest() {
-  QString inputText = "50 61 72 73 69 6E 67, \"string\\nwith\\tnewline\" # end of line comment\n"
-                      "AA FF \"another \\\"string\\\"\" 01 02\n"
-                      "0a , 0d, 00, \"\\\"\"";
+    QString inputText = "50 61, \"string # with # hash\\n\" # end of line comment\n"
+                        "AA F \"another \\\"string\\\"\" 01 02, 0a";
 
-  QByteArray parsedData = parseText(inputText);
+    QByteArray parsedData = parseText(inputText);
 
-  qDebug() << "Input Text:\n" << inputText;
-  qDebug() << "---------------------------------";
-  qDebug() << "Parsed Data (as Hex):" << parsedData.toHex();
-  qDebug() << "Parsed Data (as String):" << parsedData;
+    qDebug() << "Input Text:\n" << inputText;
+    qDebug() << "---------------------------------";
+    qDebug() << "Parsed Data (as Hex):" << parsedData.toHex();
+    qDebug() << "Parsed Data (as String):" << parsedData;
 }
+*/
