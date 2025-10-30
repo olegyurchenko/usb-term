@@ -201,6 +201,7 @@ void MainWindow::onConnectionOpen()
     ui->actionConnectionOpen->setEnabled(false);
     ui->actionConnectionClose->setEnabled(true);
     ui->actionSendData->setEnabled(true);
+    ui->actionTest->setEnabled(false);
   }
 }
 
@@ -224,6 +225,7 @@ void MainWindow::onConnectionClose()
   ui->actionConnectionOpen->setEnabled(true);
   ui->actionConnectionClose->setEnabled(false);
   ui->actionSendData->setEnabled(false);
+  ui->actionTest->setEnabled(true);
 }
 
 void MainWindow::onTabChanged()
