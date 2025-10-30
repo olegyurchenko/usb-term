@@ -272,3 +272,14 @@ void MainWindow :: onTimer()
     }
   }
 }
+
+void MainWindow :: onTest()
+{
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  auto data = parseText(form->text());
+  ui->inputForm->addLogText(InputForm::Warning, QString("%1(%2)").arg(tr("Test"), QString::number(data.size())), data);
+
+}

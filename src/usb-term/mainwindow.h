@@ -39,6 +39,7 @@ protected slots:
   void onFileChanged();
   void onTabCloseRequest(int index);
   void onTimer();
+  void onTest();
 
 private:
   Ui::MainWindow *ui;
