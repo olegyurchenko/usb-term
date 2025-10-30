@@ -40,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuF_ile">
@@ -66,6 +66,8 @@
     <addaction name="actionConnectionClose"/>
     <addaction name="separator"/>
     <addaction name="actionSendData"/>
+    <addaction name="separator"/>
+    <addaction name="actionTest"/>
    </widget>
    <addaction name="menuF_ile"/>
    <addaction name="menu_Connection"/>
@@ -90,6 +92,8 @@
    <addaction name="actionConnectionClose"/>
    <addaction name="separator"/>
    <addaction name="actionSendData"/>
+   <addaction name="separator"/>
+   <addaction name="actionTest"/>
   </widget>
   <action name="actionNew">
    <property name="icon">
@@ -203,6 +207,18 @@
    </property>
    <property name="toolTip">
     <string>Save file as</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/quickopen.png</normaloff>:/quickopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>Test</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Return</string>
    </property>
   </action>
  </widget>
@@ -362,6 +378,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTest</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onTest()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onFileNew()</slot>
@@ -374,5 +406,6 @@
   <slot>onConnectionSend()</slot>
   <slot>onConnectionClose()</slot>
   <slot>onTabChanged()</slot>
+  <slot>onTest()</slot>
  </slots>
 </ui>

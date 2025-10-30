@@ -201,6 +201,7 @@ void MainWindow::onConnectionOpen()
     ui->actionConnectionOpen->setEnabled(false);
     ui->actionConnectionClose->setEnabled(true);
     ui->actionSendData->setEnabled(true);
+    ui->actionTest->setEnabled(false);
   }
 }
 
@@ -224,6 +225,7 @@ void MainWindow::onConnectionClose()
   ui->actionConnectionOpen->setEnabled(true);
   ui->actionConnectionClose->setEnabled(false);
   ui->actionSendData->setEnabled(false);
+  ui->actionTest->setEnabled(true);
 }
 
 void MainWindow::onTabChanged()
@@ -271,4 +273,15 @@ void MainWindow :: onTimer()
       ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
     }
   }
+}
+
+void MainWindow :: onTest()
+{
+  auto form = activeForm();
+  if(!form) {
+    return;
+  }
+  auto data = parseText(form->text());
+  ui->inputForm->addLogText(InputForm::Warning, QString("%1(%2)").arg(tr("Test"), QString::number(data.size())), data);
+
 }
