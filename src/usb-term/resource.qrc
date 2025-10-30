@@ -9,5 +9,11 @@
         <file alias="send_file.png">img/send_file.png</file>
         <file alias="window-close.png">img/window-close.png</file>
         <file alias="clear.png">img/clear.png</file>
+        <file alias="chip.png">img/chip.png</file>
+        <file alias="configure.png">img/configure.png</file>
+        <file alias="download.png">img/download.png</file>
+        <file alias="parameters.png">img/parameters.png</file>
+        <file alias="print.png">img/print.png</file>
+        <file alias="quickopen.png">img/quickopen.png</file>
     </qresource>
 </RCC>
