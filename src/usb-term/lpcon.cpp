@@ -3,9 +3,8 @@
 * @pkg lpcon
 */
 /**
-* Short description of lpcon.
+* Connection for file /dev/usb/lp0.
 *
-* Long description of lpcon.<br>
 * (C) T&T, Kiev, Ukraine 2026.<br>
 * started 15.04.2026 15:50:25<br>
 * @pkgdoc lpcon
