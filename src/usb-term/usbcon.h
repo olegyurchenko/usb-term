@@ -15,9 +15,8 @@
 #ifndef USBCON_H_1761289625
 #define USBCON_H_1761289625
 /*----------------------------------------------------------------------------*/
-#include <string>
 #include <vector>
-#include <stdint.h>
+#include "connection.h"
 /*----------------------------------------------------------------------------*/
 struct UsbDeviceInfo {
   uint16_t idVendor = 0;
@@ -31,7 +30,7 @@ struct UsbDeviceInfo {
 std::vector<UsbDeviceInfo> usbDeviceList();
 
 class UsbConnectionPrivate;
-class UsbConnection {
+class UsbConnection : public Connection{
 protected:
   UsbConnectionPrivate *con = nullptr;
   std::string m_message;
@@ -39,16 +38,13 @@ protected:
   bool reopen();
 public:
   bool open(uint16_t vendor_id, uint16_t product_id);
-  void close();
+  void close() override;
   ~UsbConnection() {close();}
 
-  int read(void *buffer, size_t buffer_size, uint32_t timeout_ms);
-  int write(const void *buffer, size_t size);
+  int read(void *buffer, size_t buffer_size, uint32_t timeout_ms) override;
+  int write(const void *buffer, size_t size) override;
 
-  bool isOpened() const {return con != nullptr;}
-  bool isError() const {return m_error != 0;}
-  const std::string& message() const {return m_message;}
-  int error() const {return m_error;}
+  bool isOpened() const override {return con != nullptr;}
 };
 /*----------------------------------------------------------------------------*/
 #endif /*USBCON_H_1761289625*/

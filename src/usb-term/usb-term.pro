@@ -9,29 +9,34 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    connection.cpp \
+    connectiondialog.cpp \
     inputform.cpp \
     text_highlighter.cpp \
     usb_ids.c \
     usbcon.cpp \
-    connectiondialog.cpp \
     hex_dump.cpp \
     main.cpp \
     mainwindow.cpp \
     outputform.cpp \
-    text_parser.cpp
+    text_parser.cpp \
+    usbcondialog.cpp
 
 HEADERS += \
+    connection.h \
     connectiondialog.h \
     inputform.h \
     mainwindow.h \
     outputform.h \
-    text_highlighter.h
+    text_highlighter.h \
+    usbcondialog.h
 
 FORMS += \
     connectiondialog.ui \
     inputform.ui \
     mainwindow.ui \
-    outputform.ui
+    outputform.ui \
+    usbcondialog.ui
 
 RESOURCES += \
   resource.qrc

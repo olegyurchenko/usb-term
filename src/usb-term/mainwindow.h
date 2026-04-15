@@ -9,13 +9,13 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class OutputForm;
-class UsbConnection;
+class Connection;
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
   QTimer *timer;
-  UsbConnection *connection;
+  Connection *connection;
   OutputForm *activeForm();
   bool modifiedQuestion(OutputForm *form);
   void closeEvent(QCloseEvent *e) override;

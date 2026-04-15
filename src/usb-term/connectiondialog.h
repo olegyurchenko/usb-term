@@ -2,28 +2,26 @@
 #define CONNECTIONDIALOG_H
 
 #include <QDialog>
-#include <vector>
+
 namespace Ui {
 class ConnectionDialog;
 }
 
-struct UsbDeviceInfo;
 class ConnectionDialog : public QDialog
 {
   Q_OBJECT
-  std::vector<UsbDeviceInfo> deviceVector;
 public:
+  enum Type {
+    UsbConnection,
+    LpConnection
+  };
   explicit ConnectionDialog(QWidget *parent = nullptr);
   ~ConnectionDialog();
-
-  void setVid(uint16_t);
-  void setPid(uint16_t);
-
-  uint16_t vid() const;
-  uint16_t pid() const;
-
+  Type type() const {return m_type;}
+protected:
+  Type m_type = UsbConnection;
 protected slots:
-  void onDeviceChanged(int i);
+  void onChangeType();
 private:
   Ui::ConnectionDialog *ui;
 };

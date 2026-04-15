@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QFileInfo>
+#include "usbcondialog.h"
 #include "connectiondialog.h"
 #include "usbcon.h"
 #include "inputform.h"
@@ -15,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
   , ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  connection = new UsbConnection();
+  connection = nullptr;
   onFileNew();
   ui->tabWidget->setTabsClosable(true);
   connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::onTabCloseRequest);
@@ -30,7 +31,9 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
   delete timer;
-  delete connection;
+  if(connection) {
+    delete connection;
+  }
   delete ui;
 }
 
@@ -192,36 +195,52 @@ void MainWindow::onConnectionOpen()
 {
   ConnectionDialog dialog(this);
   if(dialog.exec() == QDialog::Accepted) {
-    auto vid = dialog.vid();
-    auto pid = dialog.pid();
-    if(!connection->open(vid, pid)) {
-      QMessageBox::critical(this, tr("Error open connection"), QString::fromStdString(connection->message()));
-      return;
+    if(dialog.type() == ConnectionDialog::UsbConnection) {
+      UsbConnDialog usbDialog(this);
+      if(usbDialog.exec() == QDialog::Accepted) {
+        auto vid = usbDialog.vid();
+        auto pid = usbDialog.pid();
+        if(connection) {
+          delete connection;
+          connection = nullptr;
+        }
+        auto *usbConnection = new UsbConnection();
+        if(!usbConnection->open(vid, pid)) {
+          QMessageBox::critical(this, tr("Error open connection"), QString::fromStdString(connection->message()));
+          delete usbConnection;
+          return;
+        }
+        connection = usbConnection;
+        ui->actionConnectionOpen->setEnabled(false);
+        ui->actionConnectionClose->setEnabled(true);
+        ui->actionSendData->setEnabled(true);
+        ui->actionTest->setEnabled(false);
+      }
     }
-    ui->actionConnectionOpen->setEnabled(false);
-    ui->actionConnectionClose->setEnabled(true);
-    ui->actionSendData->setEnabled(true);
-    ui->actionTest->setEnabled(false);
   }
 }
 
 void MainWindow::onConnectionSend()
 {
   auto form = activeForm();
-  if(!form) {
+  if(!form || !connection) {
     return;
   }
   auto data = parseText(form->text());
   ui->inputForm->addLogText(InputForm::Info, QString("%1(%2)").arg(tr("Sent"), QString::number(data.size())), data);
   connection->write(data.data(), data.size());
-  if(connection->isError()) {
+  if(connection && connection->isError()) {
     ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
   }
 }
 
 void MainWindow::onConnectionClose()
 {
-  connection->close();
+  if(connection) {
+    connection->close();
+    delete connection;
+    connection = nullptr;
+  }
   ui->actionConnectionOpen->setEnabled(true);
   ui->actionConnectionClose->setEnabled(false);
   ui->actionSendData->setEnabled(false);
@@ -263,7 +282,7 @@ void MainWindow::onTabCloseRequest(int index)
 
 void MainWindow :: onTimer()
 {
-  if(connection->isOpened()) {
+  if(connection && connection->isOpened()) {
     char buffer[1024];
     int size = connection->read(buffer, sizeof(buffer), 10);
     if(size > 0) {
@@ -283,5 +302,4 @@ void MainWindow :: onTest()
   }
   auto data = parseText(form->text());
   ui->inputForm->addLogText(InputForm::Warning, QString("%1(%2)").arg(tr("Test"), QString::number(data.size())), data);
-
 }

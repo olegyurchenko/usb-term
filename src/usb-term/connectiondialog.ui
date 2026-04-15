@@ -6,83 +6,41 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
-    <height>182</height>
+    <width>258</width>
+    <height>137</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>USB Connection</string>
+   <string>Dialog</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="img/resource.qrc">
-    <normaloff>:/connect.png</normaloff>:/connect.png</iconset>
-  </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QComboBox" name="comboBox"/>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Vendor ID</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="vidLineEdit">
-           <property name="toolTip">
-            <string>Vendor id in hex format without 0x prefix or H suffix
-Use lsusb for get id</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Product ID</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="pidLineEdit">
-           <property name="toolTip">
-            <string>Product id in hex format without 0x prefix or H suffix
-Use lsusb for get id</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Device type</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="usbRadio">
+        <property name="text">
+         <string>USB</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="lpRradio">
+        <property name="text">
+         <string>lp</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Vertical</enum>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
@@ -91,9 +49,7 @@ Use lsusb for get id</string>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="img/resource.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
@@ -102,12 +58,12 @@ Use lsusb for get id</string>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>172</y>
+     <x>166</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
-     <y>181</y>
+     <y>136</y>
     </hint>
    </hints>
   </connection>
@@ -118,33 +74,49 @@ Use lsusb for get id</string>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
-     <y>172</y>
+     <x>192</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>181</y>
+     <x>257</x>
+     <y>136</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>comboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
+   <sender>usbRadio</sender>
+   <signal>toggled(bool)</signal>
    <receiver>ConnectionDialog</receiver>
-   <slot>onDeviceChanged(int)</slot>
+   <slot>onConnectionChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>161</x>
-     <y>21</y>
+     <x>91</x>
+     <y>62</y>
     </hint>
     <hint type="destinationlabel">
-     <x>31</x>
-     <y>116</y>
+     <x>173</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lpRradio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ConnectionDialog</receiver>
+   <slot>onConnectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>46</x>
+     <y>100</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>117</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>onDeviceChanged(int)</slot>
+  <slot>onConnectionChanged()</slot>
  </slots>
 </ui>

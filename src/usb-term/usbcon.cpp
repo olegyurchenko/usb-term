@@ -286,7 +286,7 @@ bool UsbConnection :: open(uint16_t vendor_id, uint16_t product_id) {
 bool UsbConnection :: reopen()
 {
   if(con) {
-    if(!con->must_reopen) {
+    if(!con->must_reopen && con->dev_handle) {
       return true;
     }
     con->close();
