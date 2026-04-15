@@ -13,7 +13,7 @@ ConnectionDialog::~ConnectionDialog()
   delete ui;
 }
 
-void ConnectionDialog::onChangeType() {
+void ConnectionDialog::onConnectionChanged() {
   if(ui->usbRadio->isChecked()) {
     m_type = UsbConnection;
   } else if(ui->lpRradio->isChecked()) {

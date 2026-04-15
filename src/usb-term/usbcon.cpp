@@ -271,7 +271,7 @@ public:
 };
 /*----------------------------------------------------------------------------*/
 bool UsbConnection :: open(uint16_t vendor_id, uint16_t product_id) {
-  close();
+  usbClose();
   con = new UsbConnectionPrivate;
   m_message.clear();
   m_error = UsbConnectionPrivate :: open(vendor_id, product_id, con);
@@ -297,7 +297,7 @@ bool UsbConnection :: reopen()
   return false;
 }
 /*----------------------------------------------------------------------------*/
-void UsbConnection :: close() {
+void UsbConnection :: usbClose() {
   if(con) {
     delete con;
     con = nullptr;

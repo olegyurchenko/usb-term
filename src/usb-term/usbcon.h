@@ -36,10 +36,11 @@ protected:
   std::string m_message;
   int m_error = 0;
   bool reopen();
+  void usbClose();
 public:
   bool open(uint16_t vendor_id, uint16_t product_id);
-  void close() override;
-  ~UsbConnection() {close();}
+  void close() override {usbClose();};
+  ~UsbConnection() {usbClose();}
 
   int read(void *buffer, size_t buffer_size, uint32_t timeout_ms) override;
   int write(const void *buffer, size_t size) override;

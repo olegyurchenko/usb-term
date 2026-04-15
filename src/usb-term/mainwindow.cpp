@@ -8,6 +8,7 @@
 #include "usbcondialog.h"
 #include "connectiondialog.h"
 #include "usbcon.h"
+#include "lpcon.h"
 #include "inputform.h"
 #include "text_parser.h"
 
@@ -193,6 +194,10 @@ void MainWindow::onExit()
 
 void MainWindow::onConnectionOpen()
 {
+  if(connection) {
+    delete connection;
+    connection = nullptr;
+  }
   ConnectionDialog dialog(this);
   if(dialog.exec() == QDialog::Accepted) {
     if(dialog.type() == ConnectionDialog::UsbConnection) {
@@ -200,23 +205,31 @@ void MainWindow::onConnectionOpen()
       if(usbDialog.exec() == QDialog::Accepted) {
         auto vid = usbDialog.vid();
         auto pid = usbDialog.pid();
-        if(connection) {
-          delete connection;
-          connection = nullptr;
-        }
         auto *usbConnection = new UsbConnection();
         if(!usbConnection->open(vid, pid)) {
-          QMessageBox::critical(this, tr("Error open connection"), QString::fromStdString(connection->message()));
+          QMessageBox::critical(this, tr("Error open connection"), QString::fromStdString(usbConnection->message()));
           delete usbConnection;
           return;
         }
         connection = usbConnection;
-        ui->actionConnectionOpen->setEnabled(false);
-        ui->actionConnectionClose->setEnabled(true);
-        ui->actionSendData->setEnabled(true);
-        ui->actionTest->setEnabled(false);
       }
     }
+    if(dialog.type() == ConnectionDialog::LpConnection) {
+      LpConnection *lpConnection = new LpConnection();
+      if(!lpConnection->open()) {
+        QMessageBox::critical(this, tr("Error open connection"), QString::fromStdString(lpConnection->message()));
+        delete lpConnection;
+        return;
+      }
+      connection = lpConnection;
+    }
+  }
+
+  if(connection && connection->isOpened()) {
+    ui->actionConnectionOpen->setEnabled(false);
+    ui->actionConnectionClose->setEnabled(true);
+    ui->actionSendData->setEnabled(true);
+    ui->actionTest->setEnabled(false);
   }
 }
 
@@ -240,11 +253,12 @@ void MainWindow::onConnectionClose()
     connection->close();
     delete connection;
     connection = nullptr;
+
+    ui->actionConnectionOpen->setEnabled(true);
+    ui->actionConnectionClose->setEnabled(false);
+    ui->actionSendData->setEnabled(false);
+    ui->actionTest->setEnabled(true);
   }
-  ui->actionConnectionOpen->setEnabled(true);
-  ui->actionConnectionClose->setEnabled(false);
-  ui->actionSendData->setEnabled(false);
-  ui->actionTest->setEnabled(true);
 }
 
 void MainWindow::onTabChanged()
@@ -291,6 +305,8 @@ void MainWindow :: onTimer()
     if(size < 0) {
       ui->inputForm->addLogText(InputForm::Error, QString::fromStdString(connection->message()));
     }
+  } else {
+    onConnectionClose();
   }
 }
 

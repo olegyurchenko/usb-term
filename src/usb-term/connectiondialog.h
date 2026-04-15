@@ -21,7 +21,7 @@ public:
 protected:
   Type m_type = UsbConnection;
 protected slots:
-  void onChangeType();
+  void onConnectionChanged();
 private:
   Ui::ConnectionDialog *ui;
 };

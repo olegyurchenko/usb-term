@@ -12,6 +12,7 @@ SOURCES += \
     connection.cpp \
     connectiondialog.cpp \
     inputform.cpp \
+    lpcon.cpp \
     text_highlighter.cpp \
     usb_ids.c \
     usbcon.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     connection.h \
     connectiondialog.h \
     inputform.h \
+    lpcon.h \
     mainwindow.h \
     outputform.h \
     text_highlighter.h \
